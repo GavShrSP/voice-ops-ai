@@ -176,6 +176,11 @@ export default function Home() {
 
       console.log("TASK DATA:", data.result);
 
+      if (data.error) {
+        setErrorMessage(data.error);
+        return;
+      }
+
       if (!data.result) {
         setErrorMessage("No tasks were returned from the transcript.");
         return;
@@ -361,109 +366,113 @@ export default function Home() {
         </header>
 
         <section className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(340px,38%)_minmax(0,62%)]">
-          <div className="sticky top-24 flex min-h-0 flex-col rounded-3xl border border-white bg-white p-4 shadow-xl shadow-slate-200/70">
-            <div className="mb-2 flex shrink-0 flex-col gap-2 xl:flex-row xl:items-start xl:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
-                  Voice command center
-                </p>
-                <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
-                  Founder Transcript
-                </h2>
-                <p className="mt-1 text-sm leading-5 text-slate-500">
-                  Dictate or paste a conversation, then extract execution
-                  tasks.
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">
-                <span
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    isRecording
-                      ? "animate-pulse bg-red-500"
-                      : "bg-slate-300"
-                  }`}
-                />
-                {isRecording ? "Listening..." : "Not Recording"}
-              </div>
-            </div>
-
-            <div className="mb-3 shrink-0 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-blue-50/60 p-3">
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                <button
-                  type="button"
-                  onClick={startRecording}
-                  disabled={isRecording}
-                  className="group flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-black text-white shadow-xl shadow-blue-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:shadow-none"
-                  aria-label="Start recording"
-                >
-                  <span className={isRecording ? "animate-pulse" : ""}>M</span>
-                </button>
-
-                <div className="flex-1">
-                  <p className="font-bold text-slate-950">
-                    Browser voice transcription
+          <div className="min-h-0 overflow-y-auto scroll-smooth rounded-3xl border border-white bg-white p-4 shadow-xl shadow-slate-200/70">
+            <div className="pr-1">
+              <div className="mb-2 flex flex-col gap-2 xl:flex-row xl:items-start xl:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
+                    Voice command center
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
-                    Use Chrome speech recognition to populate the transcript
-                    automatically before extracting tasks.
+                  <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
+                    Founder Conversation Input
+                  </h2>
+                  <p className="mt-1 text-sm leading-5 text-slate-500">
+                    You can record voice, type manually, or paste a meeting
+                    transcript.
                   </p>
                 </div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${
+                      isRecording
+                        ? "animate-pulse bg-red-500"
+                        : "bg-slate-300"
+                    }`}
+                  />
+                  {isRecording ? "Listening..." : "Not Recording"}
+                </div>
+              </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row xl:flex-col">
+              <div className="mb-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-blue-50/60 p-3">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                   <button
                     type="button"
                     onClick={startRecording}
                     disabled={isRecording}
-                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="group flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-xl font-black text-white shadow-xl shadow-blue-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:shadow-none"
+                    aria-label="Start recording"
                   >
-                    Start Recording
+                    <span className={isRecording ? "animate-pulse" : ""}>
+                      M
+                    </span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={stopRecording}
-                    disabled={!isRecording}
-                    className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300"
-                  >
-                    Stop Recording
-                  </button>
+                  <div className="flex-1">
+                    <p className="font-bold text-slate-950">
+                      Record into the transcript
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      Voice recording updates the same input area used for typed
+                      and pasted conversations.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 sm:flex-row xl:flex-col">
+                    <button
+                      type="button"
+                      onClick={startRecording}
+                      disabled={isRecording}
+                      className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    >
+                      Start Recording
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={stopRecording}
+                      disabled={!isRecording}
+                      className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300"
+                    >
+                      Stop Recording
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              <div className="flex min-h-[430px] flex-col rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <div className="mb-3 flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">
+                      Conversation transcript
+                    </p>
+                    <p className="text-xs font-medium text-slate-500">
+                      {isVoiceTranscript
+                        ? "Voice-generated transcript"
+                        : "Record, type, or paste content here"}
+                    </p>
+                  </div>
+                  <p className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">
+                    {transcript.length} characters
+                  </p>
+                </div>
+
+                <textarea
+                  value={transcript}
+                  onChange={(e) => {
+                    setTranscript(e.target.value);
+                    setIsVoiceTranscript(false);
+                  }}
+                  placeholder="Record voice, type notes, or paste a meeting transcript from Zoom, Google Meet, Teams, WhatsApp, or another source..."
+                  className="min-h-0 flex-1 resize-none overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-900 shadow-inner outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                />
               </div>
             </div>
 
-            <div className="flex min-h-[350px] flex-[1_1_auto] flex-col rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:min-h-[390px] xl:min-h-[430px]">
-              <div className="mb-3 flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-bold text-slate-900">
-                    Transcript workspace
-                  </p>
-                  <p className="text-xs font-medium text-slate-500">
-                    {isVoiceTranscript
-                      ? "Voice-generated transcript"
-                      : "Manual transcript input"}
-                  </p>
-                </div>
-                <p className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">
-                  {transcript.length} characters
-                </p>
-              </div>
-
-              <textarea
-                value={transcript}
-                onChange={(e) => {
-                  setTranscript(e.target.value);
-                  setIsVoiceTranscript(false);
-                }}
-                placeholder="Paste founder transcript here..."
-                className="min-h-0 flex-1 resize-none rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-900 shadow-inner outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
-              />
-            </div>
-
-            <div className="mt-3 flex shrink-0 flex-col gap-2 xl:flex-row xl:items-center">
+            <div className="mt-3 flex shrink-0 flex-col gap-2 rounded-2xl border border-blue-100 bg-blue-50/80 p-2 shadow-lg shadow-blue-100/60 xl:flex-row xl:items-center">
               <button
                 onClick={extractTasks}
                 disabled={isExtracting || transcript.trim().length === 0}
-                className="inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:shadow-none"
+                className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:shadow-none xl:w-auto"
               >
                 {isExtracting && (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
