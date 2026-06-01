@@ -177,7 +177,14 @@ export default function Home() {
       console.log("TASK DATA:", data.result);
 
       if (data.error) {
-        setErrorMessage(data.error);
+        if (data.error === "Potential prompt injection detected.") {
+          setErrorMessage(
+            "Transcript contains instructions unrelated to task extraction and was blocked for security reasons."
+          );
+        } else {
+          setErrorMessage(data.error);
+        }
+
         return;
       }
 
@@ -186,10 +193,20 @@ export default function Home() {
         return;
       }
 
-      setTasks(data.result);
+      const extractedTasks = data.result as Task[];
+
+      console.log("Extracted task count:", extractedTasks.length);
+
+      if (extractedTasks.length === 0) {
+        setTasks([]);
+        setErrorMessage("No valid tasks were extracted from the transcript.");
+        return;
+      }
+
+      setTasks(extractedTasks);
       setIsVoiceTranscript(false);
 
-      const tasksToSave = data.result.map((task: Task) => ({
+      const tasksToSave = extractedTasks.map((task) => ({
         employee: task.employee,
         task: task.task,
         deadline: task.deadline,
@@ -198,9 +215,11 @@ export default function Home() {
 
       const { data: insertedData, error } = await supabase
         .from("Tasks")
-        .insert(tasksToSave);
+        .insert(tasksToSave)
+        .select();
 
       console.log("Inserted:", insertedData);
+      console.log("Inserted row count:", insertedData?.length || 0);
       console.log("Supabase Error:", error);
 
       if (error) {
@@ -208,7 +227,7 @@ export default function Home() {
         return;
       }
 
-      setSuccessMessage("Tasks saved to Supabase successfully.");
+      setSuccessMessage("Tasks added to Supabase successfully.");
       await refreshSavedTasks();
     } catch (error) {
       console.log("Extract Tasks Error:", error);

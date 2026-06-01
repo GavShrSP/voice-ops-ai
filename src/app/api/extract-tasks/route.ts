@@ -1,3 +1,5 @@
+import { detectPromptInjection } from "../../../lib/promptInjection";
+
 type ExtractedTask = {
   employee: string;
   task: string;
@@ -93,6 +95,14 @@ export async function POST(req: Request) {
 
     if (!transcript || typeof transcript !== "string") {
       return Response.json({ result: [] });
+    }
+
+    // Block obvious prompt-injection attempts locally so they never reach
+    // OpenRouter or the downstream Supabase-saving workflow.
+    if (detectPromptInjection(transcript)) {
+      return Response.json({
+        error: "Potential prompt injection detected.",
+      });
     }
 
     const guardrailResponse = await fetch(OPENROUTER_URL, {
